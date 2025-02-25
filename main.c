@@ -4,9 +4,11 @@
 #include <ctype.h>
 #include <string.h>
 
-int c_counter = 0;
-
-int* split_by_space(char* input, int cols, int input_len, int* numbers) {
+/**
+ * @brief 
+ * @param input 
+ */
+int* split_by_space(char *input, int cols, int input_len, int* numbers) {
     int digitIdxStart = 0;
     int digitIdxEnd = 0;
     char temp[5];
@@ -78,14 +80,14 @@ void print_instructions() {
     printf("\nAuthor: Boris-Mihail Gazibarov\n");
 }
 
-int* create_array_c(int** matrix, int* C, int bottom_range, int top_range, int rows) {
-    c_counter = 0;
+int* create_array_c(int** matrix, int* C, int bottom_range, int top_range, int rows, int *c_counter) {
+    *c_counter = 0;
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < rows; j++) {
             if (matrix[i][j] >= bottom_range && matrix[i][j] <= top_range) {
             } else {
-                C[c_counter]=matrix[i][j];
-                c_counter++;
+                C[*c_counter]=matrix[i][j];
+                (*c_counter)++;
             }
         }
     }
@@ -135,8 +137,8 @@ int main() {
     }
     
     printf("Here's the matrix: \n");
-    for (int i = 0; i < cols; i++) {
-        for (int j = 0; j < rows; j++) {
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
             printf("%d ", matrix[i][j]);
         }
         printf("\n");
@@ -146,7 +148,8 @@ int main() {
     printf("\nEnter range for C: ");
     scanf("%d %d", &K, &L);
 
-    int* C = create_array_c(matrix, numbers, K, L, rows);
+    int c_counter;
+    int* C = create_array_c(matrix, numbers, K, L, rows, &c_counter);
     printf("Arary C (before sorting): \n");
     for (int i = 0; i < c_counter; i++) {
         printf("%d ", C[i]);
