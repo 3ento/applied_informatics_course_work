@@ -4,6 +4,8 @@
 #include <ctype.h>
 #include <string.h>
 
+int c_counter = 0;
+
 int* split_by_space(char* input, int cols, int input_len, int* numbers) {
     int digitIdxStart = 0;
     int digitIdxEnd = 0;
@@ -62,9 +64,50 @@ int get_array_len(char *arr, int size) {
     }
 }
 
+void print_instructions() {
+    printf("Write a program to process a two-dimensional array, A[N][N], containing integers within the range[-1000, 1000]. Actions:\n");
+    printf("print the task instructions (here they are!)\n"
+    "• print the task instructions\n"
+    "• print the solution authors name\n"
+    "• enter input data for array A\n"
+    "• print the entered input data\n"
+    "• create a one-dimensional array, C, containing the elements from array A that fall within the specified range [K-L], where K & L are input values\n"
+    "• sort array C in ascending order\n"
+    "• print array C before & after sorting\n");
+
+    printf("\nAuthor: Boris-Mihail Gazibarov\n");
+}
+
+int* create_array_c(int** matrix, int* C, int bottom_range, int top_range, int rows) {
+    c_counter = 0;
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < rows; j++) {
+            if (matrix[i][j] >= bottom_range && matrix[i][j] <= top_range) {
+            } else {
+                C[c_counter]=matrix[i][j];
+                c_counter++;
+            }
+        }
+    }
+    
+    return C;
+}
+
+int compare( const void* a, const void* b)
+{
+     int int_a = * ( (int*) a );
+     int int_b = * ( (int*) b );
+     
+     if ( int_a == int_b ) return 0;
+     else if ( int_a < int_b ) return -1;
+     else return 1;
+}
+
 int main() {
+    print_instructions();
+    
     char crows[10], ccols[10];
-    printf("Enter number of matrix rows: ");
+    printf("\nEnter number of matrix rows: ");
     fgets(crows, 10, stdin);
     printf("Enter number of matrix columns: ");
     fgets(ccols, 10, stdin);
@@ -91,12 +134,28 @@ int main() {
         }
     }
     
-    printf("\n");
+    printf("Here's the matrix: \n");
     for (int i = 0; i < cols; i++) {
         for (int j = 0; j < rows; j++) {
             printf("%d ", matrix[i][j]);
         }
         printf("\n");
+    }
+    
+    int K, L;
+    printf("\nEnter range for C: ");
+    scanf("%d %d", &K, &L);
+
+    int* C = create_array_c(matrix, numbers, K, L, rows);
+    printf("Arary C (before sorting): \n");
+    for (int i = 0; i < c_counter; i++) {
+        printf("%d ", C[i]);
+    }
+    
+    printf("\nArary C (after sorting): \n");
+    qsort(C, c_counter, sizeof(int), compare);
+    for (int i = 0; i < c_counter; i++) {
+        printf("%d ", C[i]);
     }
 
     return 0;
