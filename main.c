@@ -4,38 +4,10 @@
 #include <ctype.h>
 #include <string.h>
 
-int get_input_size(int columns) {
-    return (columns*5)+(columns-1)+2;
-}
-
-int get_array_len(char *arr, int size) {
-    for (int i = 0; i<size; i++) {
-        if (arr[i] == '\0') {
-            return i;
-        }
-    }
-}
-
-int main() {
-    char str_cols[4];
-    printf("Enter columns of the matrix: ");
-    fgets(str_cols, 4, stdin);
-    int cols = atoi(str_cols);
-
-    int MAX_ROW_LEN = get_input_size(cols);
-
-
-    char input[MAX_ROW_LEN];
-    fgets(input, MAX_ROW_LEN, stdin);
-    
-    //char input[10] = {'-', '1', '2', ' ', '2'};
-    
+int* split_by_space(char* input, int cols, int input_len, int* numbers) {
     int digitIdxStart = 0;
     int digitIdxEnd = 0;
-    int numbers[cols];
     char temp[5];
-    
-    int input_len = get_array_len(input, sizeof(input) / sizeof(input[0]));
     
     int tempIdx = 0;
     int numbersIdx = 0;
@@ -45,7 +17,7 @@ int main() {
             digitIdxEnd = i-1;
             for (int j = digitIdxStart; j <= digitIdxEnd; j++) {
                 temp[tempIdx] = input[j];
-                printf("Start: %d, End: %d, Current number: %c, Current temp idx: %d\n", digitIdxStart, digitIdxEnd, input[j], tempIdx);
+                //printf("Start: %d, End: %d, Current number: %c, Current temp idx: %d\n", digitIdxStart, digitIdxEnd, input[j], tempIdx);
                 tempIdx++;
             }
             sscanf(temp, "%d", &temp_digit);
@@ -60,7 +32,7 @@ int main() {
             digitIdxEnd = i;
             for (int j = digitIdxStart; j <= digitIdxEnd; j++) {
                 temp[tempIdx] = input[j];
-                printf("Start: %d, End: %d, Current number: %c, Current temp idx: %d\n", digitIdxStart, digitIdxEnd, input[j], tempIdx);
+                //printf("Start: %d, End: %d, Current number: %c, Current temp idx: %d\n", digitIdxStart, digitIdxEnd, input[j], tempIdx);
                 tempIdx++;
             }
             sscanf(temp, "%d", &temp_digit);
@@ -75,8 +47,56 @@ int main() {
     
     }
     
+    return numbers;
+}
+
+int get_input_size(int columns) {
+    return (columns*5)+(columns-1)+2;
+}
+
+int get_array_len(char *arr, int size) {
+    for (int i = 0; i<size; i++) {
+        if (arr[i] == '\0') {
+            return i;
+        }
+    }
+}
+
+int main() {
+    char crows[10], ccols[10];
+    printf("Enter number of matrix rows: ");
+    fgets(crows, 10, stdin);
+    printf("Enter number of matrix columns: ");
+    fgets(ccols, 10, stdin);
+    
+    int rows = atoi(crows);
+    int cols = atoi(ccols);
+    
+    const int MAX_ROW_LEN = get_input_size(cols);
+    char input[255];
+    int input_len;
+    
+    int numbers[cols];
+    int** matrix = malloc(sizeof(int*)*rows);
+    for (int i = 0; i < rows; i++) {
+        matrix[i] = malloc(sizeof(int)*cols);
+        printf("Enter row #%d of the matrix:\n", i);
+        
+        fgets(input, MAX_ROW_LEN, stdin);
+        input_len = get_array_len(input, sizeof(input) / sizeof(input[0]));
+        int* converted_input = split_by_space(input, rows, input_len, numbers);
+        
+        for (int j = 0; j < cols; j++) {
+                matrix[i][j] = converted_input[j];
+        }
+    }
+    
+    printf("\n");
     for (int i = 0; i < cols; i++) {
-        printf("%d ", numbers[i]);
+        for (int j = 0; j < rows; j++) {
+            printf("%d ", matrix[i][j]);
+        }
+        printf("\n");
     }
 
     return 0;
