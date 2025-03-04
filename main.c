@@ -1,83 +1,69 @@
-// Online C compiler to run C program online
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-
-int get_input_size(int columns) {
-    return (columns*5)+(columns-1)+2;
-}
-
-int get_array_len(char *arr, int size) {
-    for (int i = 0; i<size; i++) {
-        if (arr[i] == '\0') {
-            return i;
-        }
-    }
-}
+#include "functions/middlewares.c"
+#include "functions/quicksort.c"
 
 int main() {
-    char str_cols[4];
-    printf("Enter columns of the matrix: ");
-    fgets(str_cols, 4, stdin);
-    int cols = atoi(str_cols);
+	print_instructions();
 
-    int MAX_ROW_LEN = get_input_size(cols);
+    int rows = get_valid_digit("Enter number of matrix rows (1-9): ");
+    int cols = get_valid_digit("Enter number of matrix columns (1-9): ");
 
+	const int MAX_ROW_LEN = get_input_size(cols);
+	char input[MAX_ROW_LEN];
+	int input_len;
 
-    char input[MAX_ROW_LEN];
-    fgets(input, MAX_ROW_LEN, stdin);
-    
-    //char input[10] = {'-', '1', '2', ' ', '2'};
-    
-    int digitIdxStart = 0;
-    int digitIdxEnd = 0;
-    int numbers[cols];
-    char temp[5];
-    
-    int input_len = get_array_len(input, sizeof(input) / sizeof(input[0]));
-    
-    int tempIdx = 0;
-    int numbersIdx = 0;
-    int temp_digit;
-    for (int i = 0; i < input_len; i++) {
-        if (isspace(input[i])) {
-            digitIdxEnd = i-1;
-            for (int j = digitIdxStart; j <= digitIdxEnd; j++) {
-                temp[tempIdx] = input[j];
-                printf("Start: %d, End: %d, Current number: %c, Current temp idx: %d\n", digitIdxStart, digitIdxEnd, input[j], tempIdx);
-                tempIdx++;
-            }
-            sscanf(temp, "%d", &temp_digit);
-            numbers[numbersIdx] = temp_digit;
-            
-            numbersIdx++;
-            digitIdxStart = i+1;
+	int numbers[cols] = {};
+	int** matrix = malloc(sizeof(int*)*rows);
+	for (int i = 0; i < rows; i++) {
+		matrix[i] = malloc(sizeof(int)*cols);
+		printf("Enter %d elments for row #%d of the matrix:\n", cols, i+1);
 
-            memset(temp, '\0', sizeof(temp));
-            tempIdx = 0;
-        }else if (i==input_len-1) {
-            digitIdxEnd = i;
-            for (int j = digitIdxStart; j <= digitIdxEnd; j++) {
-                temp[tempIdx] = input[j];
-                printf("Start: %d, End: %d, Current number: %c, Current temp idx: %d\n", digitIdxStart, digitIdxEnd, input[j], tempIdx);
-                tempIdx++;
-            }
-            sscanf(temp, "%d", &temp_digit);
-            numbers[numbersIdx] = temp_digit;
-            
-            numbersIdx++;
-            digitIdxStart = i+1;
-            
-            memset(temp, '\0', sizeof(temp));
-            tempIdx = 0;
+		fgets(input, MAX_ROW_LEN, stdin);
+		input_len = get_array_len(input, sizeof(input) / sizeof(input[0]));
+		split_by_space(input, numbers, input_len);
+		for (int j = 0; j < cols; j++) {
+			matrix[i][j] = numbers[j];
+		}
+		memset(numbers, 0, sizeof(numbers));
+	}
+
+	printf("Here's the matrix: \n");
+	for (int i = 0; i < rows; i++) {
+		for (int j = 0; j < cols; j++) {
+			printf("%d ", matrix[i][j]);
+		}
+		printf("\n");
+	}
+
+	int K, L;
+    printf("\nEnter range for C: ");
+    while (1) {
+        if (scanf("%d %d", &K, &L) == 2) {  
+            break;
         }
-    
-    }
-    
-    for (int i = 0; i < cols; i++) {
-        printf("%d ", numbers[i]);
+        printf("Invalid input. The range must be comprised of two numbers.\n");
+        clear_input_buffer(); 
+        printf("\nEnter range for C: ");  
     }
 
-    return 0;
+	int c_counter;
+	int* C = create_array_c(matrix, numbers, K, L, rows, &c_counter);
+	printf("Arary C (before sorting): \n");
+	for (int i = 0; i < c_counter; i++) {
+		printf("%d ", C[i]);
+	}
+
+	printf("\nArary C (after sorting): \n");
+	qsort_wrapper(C, c_counter);
+	for (int i = 0; i < c_counter; i++) {
+		printf("%d ", C[i]);
+	}
+	
+	free(matrix);
+
+	return 0;
 }
+
